@@ -1,0 +1,6 @@
+component,role,declared_weight,avg_component_score_0_1,avg_realized_contribution_to_base_score
+core_ml_fit,additive (base_score),0.55,0.0609,0.0335
+nice_to_have_fit,additive (base_score),0.15,0.0316,0.0047
+seniority_experience_fit,additive (base_score),0.3,0.454,0.1362
+location_logistics_fit,"multiplicative (logistics_multiplier, range 0.5-1.0x on base_score)",0.5,0.65,
+notice_period_fit,"multiplicative (logistics_multiplier, range 0.5-1.0x on base_score)",0.5,0.62,
