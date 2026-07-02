@@ -1,0 +1,121 @@
+# Redrob Hackathon — Submission Metadata
+# Fields marked <FILL IN> must be completed before you submit via the portal.
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "<FILL IN>"
+
+primary_contact:
+  name: "<FILL IN>"
+  email: "<FILL IN>"
+  phone: "<FILL IN>"
+
+team_members:
+  - name: "<FILL IN>"
+    email: "<FILL IN>"
+    role: "<FILL IN, e.g. ML Engineer>"
+  # Add more members as needed; solo participants list just one member
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "<FILL IN -- e.g. https://github.com/YOUR_USERNAME/redrob-ranker>"
+# Push this repo (or its contents) there before submitting. Private repos OK
+# if you can grant organizer access at Stage 3.
+
+sandbox_link: "<FILL IN -- see Dockerfile / README.md 'Sandbox' section for options>"
+# Build and deploy the included Dockerfile to HuggingFace Spaces, Streamlit
+# Cloud, Replit, Colab, or a public Docker registry. It runs rank.py against
+# the bundled 50-candidate sample end-to-end.
+
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+# Verified locally: ~100s wall-clock, ~730MB peak RAM for a 100,000-row
+# candidate file (measured against a synthetic 100K-row stress file since
+# the real candidates.jsonl.gz wasn't available in this environment --
+# re-verify this exact number against the real file before submitting).
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "<FILL IN -- e.g. MacBook Pro M2 / AWS EC2 / your machine>"
+  cpu_cores: "<FILL IN>"
+  ram_gb: "<FILL IN>"
+  python_version: "3.11"          # verify with: python --version
+  os: "<FILL IN>"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+# Be honest -- this is not penalized, but a contradiction between this
+# declaration and your Stage 5 interview is a strong negative signal.
+ai_tools_used:
+  - "Claude"
+  # Add/remove others you actually used, e.g. "GitHub Copilot", "Cursor"
+
+ai_usage_summary: |
+  Used Claude to design and implement the full ranking pipeline (feature
+  extraction, scoring formula, disqualifier rules, honeypot detection,
+  reasoning generation) based on a close reading of job_description.docx,
+  submission_spec.docx, and redrob_signals_doc.docx, then tested it against
+  the provided sample_candidates.json and a synthetic 100K-row stress file
+  to verify compute-budget compliance and output validity. No candidate
+  data was sent to any hosted LLM API as part of the ranking step itself --
+  the shipped scoring pipeline (rank.py) is pure Python/pandas with no
+  network calls. <EDIT to reflect your own additional review/iteration --
+  see the "read before you submit" note at the end of this file.>
+
+# ============================================================================
+# Approach summary (optional but recommended)
+# ============================================================================
+methodology_summary: |
+  Rule-based ranker over five components, computed per candidate from
+  career_history descriptions (not just skills tags -- this is what catches
+  keyword-stuffers and rewards plain-language Tier-5 candidates who never
+  say "RAG" but clearly shipped one). Core technical fit (embeddings, vector
+  DB/hybrid search, Python, eval frameworks) and role/seniority fit combine
+  additively into a base score; location and notice-period fit apply as a
+  bounded 0.5-1.0x multiplier rather than an independent additive term, so
+  logistics can't manufacture a high score for a technically-irrelevant
+  candidate. Skill claims are trust-discounted using Redrob's own
+  skill_assessment_scores and claimed duration_months. The JD's explicit
+  disqualifier list (consulting-only careers, architecture-only tenure,
+  research-only backgrounds, CV/speech/robotics-without-NLP, framework-
+  surface-only profiles) applies as graduated multiplicative penalties. A
+  behavioral engagement multiplier from redrob_signals down-weights
+  disengaged candidates. Honeypot detection hard-excludes suspicious
+  profiles. Runtime: ~100s / <1GB RAM for 100K candidates on CPU.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true       # true assuming you've reviewed/iterated on this -- see note below
+  no_collusion: true
+  honeypot_check_done: true         # honeypot.py runs on every submission by construction
+  reproduction_tested: true         # verified on a synthetic 100K-row file; re-verify on the real file
+
+# ----------------------------------------------------------------------------
+# READ BEFORE YOU SUBMIT
+# ----------------------------------------------------------------------------
+# submission_spec.md is explicit that AI-only submissions with no real human
+# engineering fail at Stages 3-5, and that git history / the Stage 5
+# interview are used to check this. Before submitting:
+#   1. Actually run this against the real candidates.jsonl.gz and confirm
+#      the timing/memory numbers above.
+#   2. Read jd_profile.py's keyword clusters and disqualifier logic in
+#      disqualifiers.py/honeypot.py -- tune them based on what you see in
+#      the real 100K pool (the audit reports in demo_audit/ show you what
+#      to look at). This is the highest-leverage thing you can personally
+#      add on top of the scaffold here.
+#   3. Commit in stages (not one dump) so your git history reflects real
+#      iteration, and be ready to explain every design choice above in a
+#      Stage 5 interview -- all of it traces to specific sentences in
+#      job_description.docx and submission_spec.docx, documented in
+#      README.md's requirement-to-code mapping table.
